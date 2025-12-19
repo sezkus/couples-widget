@@ -1,20 +1,42 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+// Main App Entry Point
+import React, { useState } from 'react';
+import { Modal, StyleSheet } from 'react-native';
+import HomeScreen from './src/screens/HomeScreen';
+import SettingsScreen from './src/screens/SettingsScreen';
 
 export default function App() {
+  const [showSettings, setShowSettings] = useState(false);
+  const [refreshCallback, setRefreshCallback] = useState(null);
+
+  const handleOpenSettings = (refreshFn) => {
+    setRefreshCallback(() => refreshFn);
+    setShowSettings(true);
+  };
+
+  const handleCloseSettings = () => {
+    setShowSettings(false);
+  };
+
+  const handleSaveSettings = () => {
+    if (refreshCallback) {
+      refreshCallback();
+    }
+  };
+
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <>
+      <HomeScreen onOpenSettings={handleOpenSettings} />
+
+      <Modal
+        visible={showSettings}
+        animationType="slide"
+        presentationStyle="pageSheet"
+      >
+        <SettingsScreen
+          onClose={handleCloseSettings}
+          onSave={handleSaveSettings}
+        />
+      </Modal>
+    </>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
